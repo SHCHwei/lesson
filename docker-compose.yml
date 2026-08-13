@@ -1,0 +1,108 @@
+services:
+  # 1. MariaDB Database Service
+  db:
+    image: mariadb:12.3.2
+    container_name: lesson-db
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: lesson
+      MARIADB_USER: user
+      MARIADB_PASSWORD: user1
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -u root -p$$MARIADB_ROOT_PASSWORD || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - lesson-backend-network
+
+
+  # 2. Redis Cache Service
+  redis:
+    image: redis:7-alpine
+    container_name: lesson-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - lesson-backend-network
+
+  # 3. Golang Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lesson-backend
+    restart: always
+    working_dir: /app
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+      - ./logs:/logs
+    command: ["sh", "-c", "mkdir -p /logs && air -c .air.toml 2>&1 | tee /logs/backend.log"]
+    environment:
+      DB_USER: user
+      DB_PASSWORD: user1
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: lesson
+      PORT: 8080
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      ENV: dev
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - lesson-backend-network
+
+  # 4. React Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: lesson-frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    command: >
+      sh -c "
+        if [ ! -f .env ] && [ -f .env.example ]; then
+          cp .env.example .env
+        fi &&
+        npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - backend
+    networks:
+      - lesson-network      
+
+volumes:
+  mariadb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+
+networks:
+  lesson-backend-network:
+    driver: bridge
+  lesson-network:
+    driver: bridge

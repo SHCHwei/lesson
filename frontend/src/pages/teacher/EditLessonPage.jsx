@@ -1,0 +1,457 @@
+import { useState, useEffect } from 'react'
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  Container,
+  Grid,
+  InputAdornment,
+  MenuItem,
+  Paper,
+  Snackbar,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from '@mui/material'
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
+import AttachMoneyRoundedIcon from '@mui/icons-material/AttachMoneyRounded'
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded'
+import EmailRoundedIcon from '@mui/icons-material/EmailRounded'
+import EventAvailableRoundedIcon from '@mui/icons-material/EventAvailableRounded'
+import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded'
+import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded'
+import SaveRoundedIcon from '@mui/icons-material/SaveRounded'
+import { useNavigate } from 'react-router-dom'
+import { lessonApi } from '@lib/api'
+
+export default function EditLessonPage({ currentUser }) {
+  const navigate = useNavigate()
+  const lessonID = window.location.pathname.split('/').pop()
+  const [form, setForm] = useState({
+    lessonName: '',
+    lessonDescribe: '',
+    tuitionFee: '',
+    lessonTime: '',
+    lessonAddress: '',
+    signupDates: '',
+    status: '3',
+    email: currentUser?.email || '',
+  })
+
+
+  const [students, setStudents] = useState([])
+
+  const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
+
+  const handleChange = (field) => (event) => {
+    setForm((prev) => ({
+      ...prev,
+      [field]: event.target.value,
+    }))
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setErrorMessage('')
+
+    const requiredFields = [
+      ['lessonName', '課程名稱'],
+      ['lessonDescribe', '課程說明'],
+      ['tuitionFee', '課程費用'],
+      ['lessonTime', '課程時間'],
+      ['lessonAddress', '課程地點'],
+      ['signupDates', '報名時間'],
+      ['email', '聯絡信箱'],
+    ]
+    const missingField = requiredFields.find(([field]) => !form[field].trim())
+    if (missingField) {
+      setErrorMessage(`請填寫${missingField[1]}`)
+      return
+    }
+
+    if (!currentUser?.id) {
+      setErrorMessage('找不到登入的教師帳號，請重新登入')
+      return
+    }
+
+    setLoading(true)
+    try {
+      await lessonApi.update(lessonID, {
+        lessonName: form.lessonName,
+        lessonDescribe: form.lessonDescribe,
+        tuitionFee: form.tuitionFee,
+        lessonTime: form.lessonTime,
+        lessonAddress: form.lessonAddress,
+        signupDates: form.signupDates,
+        status: form.status,
+        email: form.email,
+        teacherID: String(currentUser.id),
+      })
+      setSnackbarOpen(true)
+      setTimeout(() => {
+        navigate('/courses')
+      }, 1500)
+    } catch (error) {
+      console.error('Failed to update lesson:', error)
+      setErrorMessage(error.message || '更新課程失敗，請稍後再試')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
+  useEffect(() => {
+    if (!currentUser?.id) {
+      setErrorMessage('找不到登入的教師帳號，請重新登入')
+      setLoading(false)
+      return
+    }
+
+    let cancelled = false
+    setLoading(true)
+    setErrorMessage('')
+
+    lessonApi
+      .getById(lessonID)
+      .then((data) => {
+        if (cancelled) return
+        
+        setStudents(data.students || [])
+        setForm({
+          lessonName: data.lesson.lessonName || '',
+          lessonDescribe: data.lesson.lessonDescribe || '',
+          tuitionFee: data.lesson.tuitionFee || '',
+          lessonTime: data.lesson.lessonTime || '',
+          lessonAddress: data.lesson.lessonAddress || '',
+          signupDates: data.lesson.signupDates || '',
+          status: data.lesson.status || '1',
+          email: data.lesson.email || '',
+        })
+
+      })
+      .catch((error) => {
+        if (cancelled) return
+        setErrorMessage(error.message || '無法載入課程資料')
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [lessonID])
+
+
+
+  return (
+    <Box className="create-lesson-page" sx={{ py: 4, px: 2, minHeight: '100vh', background: '#f5f7fb' }}>
+      <Container maxWidth="md">
+        <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 3 }}>
+          <Button
+            startIcon={<ArrowBackRoundedIcon />}
+            onClick={() => navigate(-1)}
+            variant="outlined"
+            sx={{ borderRadius: '10px', backgroundColor: '#fff' }}
+          >
+            返回
+          </Button>
+          <Box>
+            <Typography variant="h5" fontWeight={700}>
+              編輯課程
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              請填寫下方欄位資訊以更新課程
+            </Typography>
+          </Box>
+        </Stack>
+
+        {errorMessage && (
+          <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }} onClose={() => setErrorMessage('')}>
+            {errorMessage}
+          </Alert>
+        )}
+
+        <Card
+          elevation={0}
+          sx={{
+            p: 3,
+            borderRadius: '24px',
+            border: '1px solid rgba(148, 163, 184, 0.2)',
+            background: '#ffffff',
+          }}
+        >
+          <CardContent>
+            <Box component="form" onSubmit={handleSubmit}>
+              <Grid container spacing={3}>
+                {/* 1. 課程名稱 */}
+                <Grid item xs={12} sm={8}>
+                  <TextField
+                    fullWidth
+                    required
+                    label="課程名稱"
+                    placeholder="請輸入課程名稱（如：Web 全端程式開發）"
+                    value={form.lessonName}
+                    onChange={handleChange('lessonName')}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <MenuBookRoundedIcon color="primary" fontSize="small" />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+
+                {/* 7. 課程狀態 */}
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    select
+                    fullWidth
+                    label="課程狀態"
+                    value={form.status}
+                    onChange={handleChange('status')}
+                  >
+                    <MenuItem value="1">籌備中</MenuItem>
+                    <MenuItem value="2">報名中</MenuItem>
+                    <MenuItem value="3">開課中</MenuItem>
+                    <MenuItem value="4">已完結</MenuItem>
+                  </TextField>
+                </Grid>
+
+                {/* 3. 課程費用 */}
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    required
+                    label="課程費用"
+                    placeholder="如：3,500 或 免費"
+                    value={form.tuitionFee}
+                    onChange={handleChange('tuitionFee')}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <AttachMoneyRoundedIcon color="primary" fontSize="small" />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+
+                {/* 4. 課程時間 */}
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    required
+                    label="課程時間"
+                    placeholder="如：週二 09:00 - 12:00"
+                    value={form.lessonTime}
+                    onChange={handleChange('lessonTime')}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <CalendarMonthRoundedIcon color="primary" fontSize="small" />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+
+                {/* 5. 課程地點 */}
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    required
+                    label="課程地點"
+                    placeholder="如：資訊大樓 301 教室 / 線上 Meet"
+                    value={form.lessonAddress}
+                    onChange={handleChange('lessonAddress')}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LocationOnRoundedIcon color="primary" fontSize="small" />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+
+                {/* 6. 報名時間 */}
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    required
+                    label="報名時間"
+                    placeholder="如：2026/08/10 ~ 2026/08/31"
+                    value={form.signupDates}
+                    onChange={handleChange('signupDates')}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <EventAvailableRoundedIcon color="primary" fontSize="small" />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+
+                {/* 8. 聯絡信箱 */}
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    required
+                    type="email"
+                    label="聯絡信箱"
+                    placeholder="如：teacher@example.com"
+                    value={form.email}
+                    onChange={handleChange('email')}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <EmailRoundedIcon color="primary" fontSize="small" />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+
+                {/* 2. 課程說明 */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    required
+                    multiline
+                    rows={4}
+                    label="課程說明"
+                    placeholder="請詳細描述課程目標、適合對象、授課內容與評分方式..."
+                    value={form.lessonDescribe}
+                    onChange={handleChange('lessonDescribe')}
+                  />
+                </Grid>
+
+                {/* 按鈕組 */}
+                <Grid item xs={12}>
+                  <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
+                    <Button
+                      variant="outlined"
+                      size="large"
+                      onClick={() => navigate(-1)}
+                      disabled={loading}
+                      sx={{ borderRadius: '12px', px: 4 }}
+                    >
+                      取消
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      size="large"
+                      disabled={loading}
+                      startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <SaveRoundedIcon />}
+                      sx={{ borderRadius: '12px', px: 4 }}
+                    >
+                      {loading ? '儲存中...' : '儲存課程'}
+                    </Button>
+                  </Stack>
+                </Grid>
+              </Grid>
+            </Box>
+          </CardContent>
+        </Card>
+
+        {/* 學生列表 */}
+        <Card
+          elevation={0}
+          sx={{
+            mt: 3,
+            p: 3,
+            borderRadius: '24px',
+            border: '1px solid rgba(148, 163, 184, 0.2)',
+            background: '#ffffff',
+          }}
+        >
+          <CardContent>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
+              <Box>
+                <Typography variant="h6" fontWeight={600}>
+                  修課學生名單
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  共 {students.length} 位學生
+                </Typography>
+              </Box>
+            </Stack>
+
+            <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid rgba(148, 163, 184, 0.15)' }}>
+              <Table>
+                <TableHead sx={{ backgroundColor: '#f8fafc' }}>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 600 }}>編號</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>姓名</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>電子郵件</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>聯絡電話</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={4} align="center" sx={{ py: 8 }}>
+                        <CircularProgress size={30} />
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                          載入中...
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : students.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={4} align="center" sx={{ py: 8 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          目前尚無學生報名此課程
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    students.map((student) => (
+                      <TableRow key={student.id} hover>
+                        <TableCell>{student.id || '-'}</TableCell>
+                        <TableCell>
+                          <Typography fontWeight={500}>{student.studentName || '-'}</Typography>
+                        </TableCell>
+                        <TableCell>{student.email || '-'}</TableCell>
+                        <TableCell>{student.phone || '-'}</TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </CardContent>
+        </Card>
+      </Container>
+
+
+
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity="success" onClose={() => setSnackbarOpen(false)} sx={{ width: '100%', borderRadius: '10px' }}>
+          課程已成功建立！即將返回主頁...
+        </Alert>
+      </Snackbar>
+    </Box>
+  )
+}
