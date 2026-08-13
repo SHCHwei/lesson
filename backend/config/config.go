@@ -3,9 +3,10 @@ package config
 import "os"
 
 type Config struct {
-	Domain  string
-	Port    string
-	Env		string
+	Domain 		string
+	Port    	string
+	Env			string
+	FrontendURL string
 }
 
 type DataBaseConfig struct {
@@ -29,32 +30,15 @@ func Load() (*Config, *DataBaseConfig, *RedisConfig) {
 	if env == "" {
 		env = "dev"
 	}
-
-
-	if env == "dev" {
-		return &Config{
-			Domain: "localhost",
-			Port:   "8080",
-			Env:	"dev",
-		}, &DataBaseConfig{
-			User:     "user",
-			Password: "user1",
-			Port:     "3306",
-			DBName:   "lesson",
-			Host:     "db",
-		}, &RedisConfig{
-			Addr:     "redis",
-			Port:     "6379",
-			Password: "",
-			DB:       0,
-		}
-
-	}
-
 	
 	domain := os.Getenv("DOMAIN")
 	if domain == "" {
 		domain = "localhost"
+	}
+
+	frontDomain := os.Getenv("Frontend_URL")
+	if frontDomain == "" {
+		frontDomain = "http://localhost:5173"
 	}
 
 	port := os.Getenv("PORT")
@@ -88,9 +72,10 @@ func Load() (*Config, *DataBaseConfig, *RedisConfig) {
 	redis_password := os.Getenv("REDIS_PASSWORD")
 
 	return &Config{
-			Domain: domain,
-			Port:   port,
-			Env:	env,
+			Domain: 		domain,
+			Port:   		port,
+			Env:			env,
+			FrontendURL: 	frontDomain,
 		}, &DataBaseConfig{
 			User:     user,
 			Password: password,

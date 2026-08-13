@@ -6,14 +6,11 @@ import (
 	"backend/handler"
 	"backend/router"
 	"backend/services"
-	"log"
 )
 
 func main() {
 
 	cfg, DBcfg, Rediscfg := config.Load()
-
-	log.Println(cfg, DBcfg, Rediscfg)
 
 	database.InitDB(DBcfg, Rediscfg)
 
@@ -29,7 +26,7 @@ func main() {
 	lessonHandler := handler.NewLessonHandler(lessonService)
 	teacherHandler := handler.NewTeacherHandler(teacherService)
 
-	r := router.SetupRouter(authHandler, studentHandler, lessonHandler, teacherHandler)
+	r := router.SetupRouter(cfg, authHandler, studentHandler, lessonHandler, teacherHandler)
 
 	listenAddr := ":" + cfg.Port
 	if cfg.Port == "" {

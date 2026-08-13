@@ -1,0 +1,40 @@
+# 第一階段：建置階段
+FROM golang:1.23-alpine AS builder
+
+RUN apk add --no-cache git gcc musl-dev
+
+WORKDIR /app
+
+# 複製 go.mod 和 go.sum 並下載依賴
+COPY go.mod go.sum ./
+RUN go mod download
+
+# 複製所有程式碼
+COPY . .
+
+# 編譯 Go 應用程式
+# CGO_ENABLED=0 用於靜態編譯
+# -ldflags="-w -s" 用於減小二進制文件大小
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /app/main .
+
+# 第二階段：運行階段
+FROM alpine:latest
+
+# 安裝 CA 證書（用於 HTTPS 請求）
+RUN apk --no-cache add ca-certificates tzdata
+
+# 設定時區為台北
+ENV TZ=Asia/Taipei
+
+WORKDIR /app
+
+# 從建置階段複製編譯好的二進制文件
+COPY --from=builder /app/main .
+
+# 複製設定檔（如果有的話）
+COPY --from=builder /app/.air.toml* ./ 
+
+EXPOSE 8080
+
+# 執行編譯好的二進制文件
+CMD ["./main"]

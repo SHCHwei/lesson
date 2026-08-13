@@ -1,18 +1,20 @@
 services:
-  # 1. MariaDB Database Service
+  # 1. MySQL Database Service
   db:
-    image: mariadb:12.3.2
+    image: mysql:8.0
     container_name: lesson-db
     restart: always
     ports:
       - "3306:3306"
     environment:
-      MARIADB_ROOT_PASSWORD: root
-      MARIADB_DATABASE: lesson
-      MARIADB_USER: user
-      MARIADB_PASSWORD: user1
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: lesson
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user1
+    volumes:
+      - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -u root -p$$MARIADB_ROOT_PASSWORD || exit 1"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -49,18 +51,29 @@ services:
     volumes:
       - ./backend:/app
       - ./logs:/logs
-    command: ["sh", "-c", "mkdir -p /logs && air -c .air.toml 2>&1 | tee /logs/backend.log"]
+    command: 
+      - sh
+      - -c
+      - |
+        echo "安裝 air..."
+        go install github.com/air-verse/air@v1.52
+        echo "建立 logs 目錄..."
+        mkdir -p /logs
+        echo "啟動 air..."
+        air -c .air.toml 2>&1 | tee /logs/backend.log
     environment:
+      DOMAIN: localhost
+      PORT: 8080
       DB_USER: user
       DB_PASSWORD: user1
       DB_HOST: db
       DB_PORT: 3306
       DB_NAME: lesson
-      PORT: 8080
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ""
       ENV: dev
+      Frontend_URL: http://localhost:5173
     depends_on:
       db:
         condition: service_healthy
@@ -95,7 +108,7 @@ services:
       - lesson-network      
 
 volumes:
-  mariadb_data:
+  mysql_data:
     driver: local
   redis_data:
     driver: local

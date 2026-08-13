@@ -38,8 +38,9 @@ func (s *AuthService) TeacherLogin(c *gin.Context, email, password string) (map[
 		return nil, errors.New("無法建立登入會話")
 	}
 
+	secure := s.cfg.Env != "dev"
 
-	c.SetCookie("lesson_session_id", session_id, 0, "/", s.cfg.Domain, false, true)
+	c.SetCookie("lesson_session_id", session_id, 0, "/", s.cfg.Domain, secure, true)
 
 	data := map[string]string{
 		"id": teacherID,
@@ -69,7 +70,8 @@ func (s *AuthService) StudentLogin(c *gin.Context, email, password string) (map[
 	}
 
 
-	c.SetCookie("lesson_session_id", session_id, 0, "/", s.cfg.Domain, false, true)
+	secure := s.cfg.Env != "dev"
+	c.SetCookie("lesson_session_id", session_id, 0, "/", s.cfg.Domain, secure, true)
 
 	data := map[string]string{
 		"id": studentID,
@@ -96,7 +98,8 @@ func (s *AuthService) Logout(c *gin.Context) error {
 	}
 	
 
-	c.SetCookie("lesson_session_id", sessionID, -1, "/", s.cfg.Domain, false, true)
+	secure := s.cfg.Env != "dev"
+	c.SetCookie("lesson_session_id", sessionID, -1, "/", s.cfg.Domain, secure, true)
 
 	return nil
 }

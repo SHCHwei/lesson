@@ -1,17 +1,25 @@
 package router
 
 import (
+	"backend/config"
 	"backend/handler"
 	"backend/middleware"
+
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(authHandler *handler.AuthHandler, studentHandler *handler.StudentHandler, lessonHandler *handler.LessonHandler, teacherHandler *handler.TeacherHandler) *gin.Engine {
+func SetupRouter(cfg *config.Config, authHandler *handler.AuthHandler, studentHandler *handler.StudentHandler, lessonHandler *handler.LessonHandler, teacherHandler *handler.TeacherHandler) *gin.Engine {
 	r := gin.New()
 
-	r.Use(middleware.Cors())
+	r.Use(middleware.Cors(cfg))
 
-
+	// Health Check API
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status":  "ok",
+			"message": "Service is running",
+		})
+	})
 
 	r.POST("/api/v1/teacher/login", authHandler.TeacherLogin)
 	r.POST("/api/v1/student/login", authHandler.StudentLogin)
@@ -20,7 +28,6 @@ func SetupRouter(authHandler *handler.AuthHandler, studentHandler *handler.Stude
 
 	r.POST("/api/v1/teacher/create", teacherHandler.Create)
 	r.POST("/api/v1/student/create", studentHandler.Create)
-
 
 	studentRoutes := r.Group("/api/v1/students")
 	studentRoutes.Use(middleware.Auth())
@@ -31,7 +38,6 @@ func SetupRouter(authHandler *handler.AuthHandler, studentHandler *handler.Stude
 		studentRoutes.DELETE("/:id", studentHandler.Delete)
 		studentRoutes.GET("/:id/lessonList", studentHandler.GetLessonList)
 	}
-
 
 	lessonRoutes := r.Group("/api/v1/lessons")
 	lessonRoutes.Use(middleware.Auth())
@@ -45,7 +51,6 @@ func SetupRouter(authHandler *handler.AuthHandler, studentHandler *handler.Stude
 		lessonRoutes.POST("/joinLesson", lessonHandler.JoinLesson)
 		lessonRoutes.POST("/cancelLesson", lessonHandler.CancelLesson)
 	}
-
 
 	teacherRoutes := r.Group("/api/v1/teachers")
 	teacherRoutes.Use(middleware.Auth())

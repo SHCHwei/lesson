@@ -32,7 +32,7 @@ export default function Topbar({ isTeacher, onOpenCreateEmployee, setLoggedIn, s
             目前登入身分：{isTeacher ? '教師 (Teacher)' : '學生 (Student)'}
           </Typography>
         </Box>
-        {location.pathname === '/courses' && isTeacher && (
+        {location.pathname === '/teacher_courses' && isTeacher && (
           <Button
             variant="contained"
             color="primary"
