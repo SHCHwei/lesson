@@ -12,6 +12,7 @@ import (
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sessionID, err := c.Cookie("lesson_session_id")
+		log.Printf("Auth middleware - Cookie error: %v, SessionID: %s", err, sessionID)
 		if err != nil || strings.TrimSpace(sessionID) == "" {
 			c.JSON(401, gin.H{"error": "未登入"})
 			c.Abort()

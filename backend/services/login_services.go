@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"gorm.io/gorm"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type AuthService struct {
@@ -40,7 +41,29 @@ func (s *AuthService) TeacherLogin(c *gin.Context, email, password string) (map[
 
 	secure := s.cfg.Env != "dev"
 
+
+	var sameSite http.SameSite
+	if s.cfg.Env == "dev" {
+		sameSite = http.SameSiteLaxMode
+		secure = false
+	} else {
+		sameSite = http.SameSiteNoneMode
+		secure = true
+	}
+
+
 	c.SetCookie("lesson_session_id", session_id, 0, "/", "", secure, true)
+
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     "lesson_session_id",
+		Value:    session_id,
+		Path:     "/",
+		Domain:   "",
+		MaxAge:   0,  // Session cookie
+		Secure:   secure,
+		HttpOnly: true,
+		SameSite: sameSite,  // 允許跨域發送
+	})
 
 	data := map[string]string{
 		"id": teacherID,
