@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL !== undefined ? import.meta.env.VITE_API_BASE_URL : ''
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL !== undefined ? "https://" + import.meta.env.VITE_API_BASE_URL : ''
 
 function buildUrl(path) {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
