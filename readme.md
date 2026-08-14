@@ -4,6 +4,9 @@
 ## 主旨
 
 這專案是我的GO實作練習，使用Go語言建制基本CURD和登入功能。前端則是使用 react + vite 建立，為了專注於後端製作和後續部署練習，前端大部分 AI agent 製作。
+此專案會部署到 railway.app
+
+網址 ： https://elegant-cooperation-production-0f50.up.railway.app/
 
 
 ## 環境

@@ -33,37 +33,14 @@ func (s *AuthService) TeacherLogin(c *gin.Context, email, password string) (map[
 
 
 	teacherID := strconv.Itoa(teacher.Id)
-	session_id , err := utils.CreateTeacherSession(teacherID)
+	sessionID , err := utils.CreateTeacherSession(teacherID)
  
 	if err != nil {
 		return nil, errors.New("無法建立登入會話")
 	}
 
-	secure := s.cfg.Env != "dev"
 
-
-	var sameSite http.SameSite
-	if s.cfg.Env == "dev" {
-		sameSite = http.SameSiteLaxMode
-		secure = false
-	} else {
-		sameSite = http.SameSiteNoneMode
-		secure = true
-	}
-
-
-	c.SetCookie("lesson_session_id", session_id, 0, "/", "", secure, true)
-
-	http.SetCookie(c.Writer, &http.Cookie{
-		Name:     "lesson_session_id",
-		Value:    session_id,
-		Path:     "/",
-		Domain:   "",
-		MaxAge:   0,  // Session cookie
-		Secure:   secure,
-		HttpOnly: true,
-		SameSite: sameSite,  // 允許跨域發送
-	})
+	buildSessionCookie(c, sessionID, s.cfg)
 
 	data := map[string]string{
 		"id": teacherID,
@@ -86,15 +63,14 @@ func (s *AuthService) StudentLogin(c *gin.Context, email, password string) (map[
 	}
 
 	studentID := strconv.Itoa(student.Id)
-	session_id , err := utils.CreateStudentSession(studentID)
+	sessionID , err := utils.CreateStudentSession(studentID)
  
 	if err != nil {
 		return nil, errors.New("無法建立登入會話")
 	}
 
 
-	secure := s.cfg.Env != "dev"
-	c.SetCookie("lesson_session_id", session_id, 0, "/", "", secure, true)
+	buildSessionCookie(c, sessionID, s.cfg)
 
 	data := map[string]string{
 		"id": studentID,
@@ -106,8 +82,6 @@ func (s *AuthService) StudentLogin(c *gin.Context, email, password string) (map[
 
 	return data, nil
 }
-
-
 
 func (s *AuthService) Logout(c *gin.Context) error {
 	sessionID, err := c.Cookie("lesson_session_id")
@@ -121,9 +95,45 @@ func (s *AuthService) Logout(c *gin.Context) error {
 	}
 	
 
-	secure := s.cfg.Env != "dev"
-	c.SetCookie("lesson_session_id", sessionID, -1, "/", "", secure, true)
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     "lesson_session_id",
+		Value:    sessionID,
+		Path:     "/",
+		Domain:   "",
+		MaxAge:   -1,  // Session cookie
+		Secure:   false,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,  // 允許跨域發送
+	})
 
 	return nil
 }
+
+
+func buildSessionCookie(c *gin.Context, sessionID string, cfg *config.Config) {
+
+	var sameSite http.SameSite
+	var secure bool
+
+	if cfg.Env == "dev" {
+		sameSite = http.SameSiteLaxMode
+		secure = false
+	} else {
+		sameSite = http.SameSiteNoneMode
+		secure = true
+	}
+
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     "lesson_session_id",
+		Value:    sessionID,
+		Path:     "/",
+		Domain:   "",
+		MaxAge:   0,  // Session cookie
+		Secure:   secure,
+		HttpOnly: true,
+		SameSite: sameSite,  // 允許跨域發送
+	})
+
 	
+
+}
