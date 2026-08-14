@@ -59,7 +59,7 @@ EOF
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # 暴露 80 端口
-# EXPOSE 80
+EXPOSE 80
 
 # 啟動 nginx（前台模式）
 CMD ["nginx", "-g", "daemon off;"]
