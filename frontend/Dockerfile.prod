@@ -12,6 +12,10 @@ RUN npm ci
 # 複製所有原始碼
 COPY . .
 
+# 關鍵：接收構建參數並設為環境變數
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 # 建置生產環境的靜態文件
 RUN npm run build
 
