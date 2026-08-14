@@ -40,7 +40,7 @@ func (s *AuthService) TeacherLogin(c *gin.Context, email, password string) (map[
 
 	secure := s.cfg.Env != "dev"
 
-	c.SetCookie("lesson_session_id", session_id, 0, "/", s.cfg.FrontendURL, secure, true)
+	c.SetCookie("lesson_session_id", session_id, 0, "/", "", secure, true)
 
 	data := map[string]string{
 		"id": teacherID,
@@ -71,7 +71,7 @@ func (s *AuthService) StudentLogin(c *gin.Context, email, password string) (map[
 
 
 	secure := s.cfg.Env != "dev"
-	c.SetCookie("lesson_session_id", session_id, 0, "/", s.cfg.FrontendURL, secure, true)
+	c.SetCookie("lesson_session_id", session_id, 0, "/", "", secure, true)
 
 	data := map[string]string{
 		"id": studentID,
@@ -99,7 +99,7 @@ func (s *AuthService) Logout(c *gin.Context) error {
 	
 
 	secure := s.cfg.Env != "dev"
-	c.SetCookie("lesson_session_id", sessionID, -1, "/", s.cfg.FrontendURL, secure, true)
+	c.SetCookie("lesson_session_id", sessionID, -1, "/", "", secure, true)
 
 	return nil
 }
