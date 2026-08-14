@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
+    "lint": "oxlint",
     "preview": "vite preview --port $PORT --host"
   },
   "dependencies": {
