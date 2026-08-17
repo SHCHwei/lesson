@@ -144,7 +144,7 @@ export default function StudentCoursesList({ userRole, currentUser, setLoggedIn,
           )}
 
           <Paper className="table-panel" elevation={0}>
-                <Box className="table-toolbar">
+                {/* <Box className="table-toolbar">
                   <TextField
                     size="small"
                     placeholder="搜尋課程名稱、代號或教師"
@@ -160,7 +160,7 @@ export default function StudentCoursesList({ userRole, currentUser, setLoggedIn,
                     sx={{ minWidth: 280 }}
                   />
                   <Chip label={`共 ${filteredCourses.length} 門課程`} color="primary" variant="outlined" />
-                </Box>
+                </Box> */}
 
 
                 <TableContainer>

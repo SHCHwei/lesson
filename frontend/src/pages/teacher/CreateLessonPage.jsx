@@ -35,7 +35,8 @@ export default function CreateLessonPage({ currentUser }) {
     tuitionFee: '',
     lessonTime: '',
     lessonAddress: '',
-    signupDates: '',
+    signupStartDate: '',
+    signupEndDate: '',
     status: '1',
     email: currentUser?.email || '',
   })
@@ -51,6 +52,32 @@ export default function CreateLessonPage({ currentUser }) {
     }))
   }
 
+  const getTodayDate = () => {
+    const today = new Date()
+    return today.toISOString().split('T')[0]
+  }
+
+  const validateDates = () => {
+    const today = getTodayDate()
+    
+    if (form.signupStartDate && form.signupStartDate < today) {
+      setErrorMessage('報名開始日期不能是過去的日期')
+      return false
+    }
+    
+    if (form.signupEndDate && form.signupEndDate < today) {
+      setErrorMessage('報名結束日期不能是過去的日期')
+      return false
+    }
+    
+    if (form.signupStartDate && form.signupEndDate && form.signupStartDate > form.signupEndDate) {
+      setErrorMessage('報名開始日期不能晚於結束日期')
+      return false
+    }
+    
+    return true
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault()
     setErrorMessage('')
@@ -61,12 +88,17 @@ export default function CreateLessonPage({ currentUser }) {
       ['tuitionFee', '課程費用'],
       ['lessonTime', '課程時間'],
       ['lessonAddress', '課程地點'],
-      ['signupDates', '報名時間'],
+      ['signupStartDate', '報名開始日期'],
+      ['signupEndDate', '報名結束日期'],
       ['email', '聯絡信箱'],
     ]
     const missingField = requiredFields.find(([field]) => !form[field].trim())
     if (missingField) {
       setErrorMessage(`請填寫${missingField[1]}`)
+      return
+    }
+
+    if (!validateDates()) {
       return
     }
 
@@ -77,13 +109,15 @@ export default function CreateLessonPage({ currentUser }) {
 
     setLoading(true)
     try {
+      const signupDates = `${form.signupStartDate} ~ ${form.signupEndDate}`
+      
       await lessonApi.create({
         lessonName: form.lessonName,
         lessonDescribe: form.lessonDescribe,
         tuitionFee: form.tuitionFee,
         lessonTime: form.lessonTime,
         lessonAddress: form.lessonAddress,
-        signupDates: form.signupDates,
+        signupDates: signupDates,
         status: form.status,
         email: form.email,
         teacherID: String(currentUser.id),
@@ -139,9 +173,15 @@ export default function CreateLessonPage({ currentUser }) {
         >
           <CardContent>
             <Box component="form" onSubmit={handleSubmit}>
-              <Grid container spacing={3}>
+              <Grid 
+                container 
+                spacing={3}
+                direction="column"
+                justifyContent="center"
+                alignItems="flex-start"
+              >
                 {/* 1. 課程名稱 */}
-                <Grid item xs={12} sm={8}>
+                <Grid item xs={12}>
                   <TextField
                     fullWidth
                     required
@@ -160,7 +200,7 @@ export default function CreateLessonPage({ currentUser }) {
                 </Grid>
 
                 {/* 7. 課程狀態 */}
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12}>
                   <TextField
                     select
                     fullWidth
@@ -176,7 +216,7 @@ export default function CreateLessonPage({ currentUser }) {
                 </Grid>
 
                 {/* 3. 課程費用 */}
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12}>
                   <TextField
                     fullWidth
                     required
@@ -195,7 +235,7 @@ export default function CreateLessonPage({ currentUser }) {
                 </Grid>
 
                 {/* 4. 課程時間 */}
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12}>
                   <TextField
                     fullWidth
                     required
@@ -214,7 +254,7 @@ export default function CreateLessonPage({ currentUser }) {
                 </Grid>
 
                 {/* 5. 課程地點 */}
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12}>
                   <TextField
                     fullWidth
                     required
@@ -232,27 +272,36 @@ export default function CreateLessonPage({ currentUser }) {
                   />
                 </Grid>
 
-                {/* 6. 報名時間 */}
-                <Grid item xs={12} sm={6}>
+                {/* 6. 報名開始日期 */}
+                <Grid item xs={12}>
                   <TextField
                     fullWidth
                     required
-                    label="報名時間"
-                    placeholder="如：2026/08/10 ~ 2026/08/31"
-                    value={form.signupDates}
-                    onChange={handleChange('signupDates')}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <EventAvailableRoundedIcon color="primary" fontSize="small" />
-                        </InputAdornment>
-                      ),
-                    }}
+                    type="date"
+                    label="報名開始日期"
+                    value={form.signupStartDate}
+                    onChange={handleChange('signupStartDate')}
+                    InputLabelProps={{ shrink: true }}
+                    inputProps={{ min: getTodayDate() }}
+                  />
+                </Grid>
+
+                {/* 7. 報名結束日期 */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    required
+                    type="date"
+                    label="報名結束日期"
+                    value={form.signupEndDate}
+                    onChange={handleChange('signupEndDate')}
+                    InputLabelProps={{ shrink: true }}
+                    inputProps={{ min: form.signupStartDate || getTodayDate() }}
                   />
                 </Grid>
 
                 {/* 8. 聯絡信箱 */}
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12}>
                   <TextField
                     fullWidth
                     required

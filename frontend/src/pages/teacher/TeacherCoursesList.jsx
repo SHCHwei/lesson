@@ -107,7 +107,7 @@ export default function TeacherCoursesList({ userRole, currentUser, setLoggedIn,
           )}
 
           <Paper className="table-panel" elevation={0}>
-                <Box className="table-toolbar">
+                {/* <Box className="table-toolbar">
                   <TextField
                     size="small"
                     placeholder="搜尋課程名稱、代號或教師"
@@ -123,7 +123,7 @@ export default function TeacherCoursesList({ userRole, currentUser, setLoggedIn,
                     sx={{ minWidth: 280 }}
                   />
                   <Chip label={`共 ${filteredCourses.length} 門課程`} color="primary" variant="outlined" />
-                </Box>
+                </Box> */}
 
 
                 <TableContainer>
@@ -162,7 +162,7 @@ export default function TeacherCoursesList({ userRole, currentUser, setLoggedIn,
                               <Typography fontWeight={600}>{course.lessonName}</Typography>
                             </TableCell>
                             <TableCell>{course.lessonTime || '-'}</TableCell>
-                            <TableCell>{course.studentsCount || 0} 人</TableCell>
+                            <TableCell>{course.Students.length || 0} 人</TableCell>
                             <TableCell>
                               <Chip
                                 label={getLessonStatusText(course.status)}
