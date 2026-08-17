@@ -206,14 +206,24 @@ export default function StudentCoursesList({ userRole, currentUser, setLoggedIn,
                               />
                             </TableCell>
                             <TableCell align="center">
-                              <Button
-                                size="small"
-                                variant={course.isJoined ? 'outlined' : 'contained'}
-                                color={course.isJoined ? 'error' : 'primary'}
-                                onClick={() => handleCourseClick(course.id, course.isJoined)}
-                              >
-                                {course.isJoined ? '取消報名' : '報名'}
-                              </Button>
+                              <Stack direction="row" spacing={1} justifyContent="center">
+                                <Button
+                                  size="small"
+                                  variant={course.isJoined ? 'outlined' : 'contained'}
+                                  color={course.isJoined ? 'error' : 'primary'}
+                                  onClick={() => handleCourseClick(course.id, course.isJoined)}
+                                >
+                                  {course.isJoined ? '取消報名' : '報名'}
+                                </Button>
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  color="info"
+                                  onClick={() => navigate(`/student_lesson/${course.id}`)}
+                                >
+                                  查看詳情
+                                </Button>
+                              </Stack>
                             </TableCell>
                           </TableRow>
                         ))

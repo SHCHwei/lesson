@@ -31,7 +31,8 @@ func SetupRouter(cfg *config.Config, authHandler *handler.AuthHandler, studentHa
 
 	studentRoutes := r.Group("/api/v1/students")
 	studentRoutes.Use(middleware.Auth())
-	{
+	{	
+		studentRoutes.GET("/overview", studentHandler.Overview)
 		studentRoutes.GET("/", studentHandler.List)
 		studentRoutes.GET("/:id", studentHandler.GetByID)
 		studentRoutes.PUT("/:id", studentHandler.Update)
@@ -56,6 +57,7 @@ func SetupRouter(cfg *config.Config, authHandler *handler.AuthHandler, studentHa
 	teacherRoutes := r.Group("/api/v1/teachers")
 	teacherRoutes.Use(middleware.Auth())
 	{
+		teacherRoutes.GET("/overview", teacherHandler.Overview)
 		teacherRoutes.GET("/", teacherHandler.List)
 		teacherRoutes.GET("/:id", teacherHandler.GetByID)
 		teacherRoutes.PUT("/:id", teacherHandler.Update)

@@ -20,4 +20,6 @@ type TeacherService interface {
     UpdateTeacher(id int, teacher Teacher) (Teacher, error)
     DeleteTeacher(id int) error
     SearchLessonByTeacherID(id int)(Teacher, error)
+    UpdatePassword(id int, newPassword string, currentPassword string) error
+    GetOverview()(map[string]interface{})
 }

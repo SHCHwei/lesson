@@ -4,6 +4,7 @@ import (
 	"backend/models"
 	"backend/utils"
 	"errors"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -113,4 +114,21 @@ func (s *TeacherService) UpdatePassword(id int, newPassword string, currentPassw
 	}
 
 	return nil
+}
+
+func (s *TeacherService) GetOverview() map[string]any {
+
+	var signupStartLessons []models.Lesson
+
+	// 即將開課的課程
+	s.db.Preload("Teachers").Where("signupStartDate > ? and status = ?", time.Now(), "1").Order("signupStartDate").Limit(5).Find(&signupStartLessons)
+
+	// 即將報名結束的課程
+	var endingOpenLessons []models.Lesson
+	s.db.Preload("Teachers").Where("signupEndDate > ? and status = ? ", time.Now(), "2").Order("signupEndDate").Limit(5).Find(&endingOpenLessons)
+
+	return map[string]any{
+		"beginningOpenLessons": signupStartLessons,
+		"endingOpenLessons":    endingOpenLessons,
+	}
 }

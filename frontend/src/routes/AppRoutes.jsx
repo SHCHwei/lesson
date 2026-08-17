@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import CreateLessonPage from '@pages/teacher/CreateLessonPage'
 import EditLessonPage from '@pages/teacher/EditLessonPage'
 import StudentCoursesList from '@pages/student/StudentCoursesList'
+import StudentLessonDetail from '@pages/student/StudentLessonDetail'
 import TeacherCoursesList from '@pages/teacher/TeacherCoursesList'
 import OverviewPage from '@pages/OverviewPage'
 import SecurityPage from '@pages/SecurityPage'
@@ -93,6 +94,14 @@ export default function AppRoutes({
           />,
         )}
       />        
+
+
+      <Route
+        path="/student_lesson/:lessonId"
+        element={requireAuth(
+          <StudentLessonDetail />,
+        )}
+      />
 
 
       <Route

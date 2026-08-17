@@ -19,10 +19,11 @@ type lessonInfoDTO struct {
     LessonDescribe 	string  `json:"lessonDescribe" binding:"required"`
     LessonTime 		string  `json:"lessonTime" binding:"required"`
     LessonAddress 	string  `json:"lessonAddress" binding:"required"`
-    TuitionFee 		string  `json:"tuitionFee" binding:"required"`
-    Email 			string  `json:"email" binding:"required"`
-    SignupDates 	string  `json:"signupDates" binding:"required"`
-    Status 			string  `json:"status" binding:"required"`	
+    TuitionFee 		string  `json:"tuitionFee" binding:"required,numeric"`
+    Email 			string  `json:"email" binding:"required,email"`
+    SignupStartDate string  `json:"signupStartDate" binding:"required,datetime=2006-01-02"`
+    SignupEndDate 	string  `json:"signupEndDate" binding:"required,datetime=2006-01-02"`
+    Status 			string  `json:"status" binding:"required,oneof=1 2 3 4"`	
 	TeacherID       string	`json:"teacherID" binding:"required"`	
 }
 
@@ -92,7 +93,8 @@ func (h *LessonHandler) Create(c *gin.Context) {
 	lesson.LessonAddress = inputData.LessonAddress
 	lesson.TuitionFee = inputData.TuitionFee
 	lesson.Email = inputData.Email
-	lesson.SignupDates = inputData.SignupDates
+	lesson.SignupStartDate = inputData.SignupStartDate
+	lesson.SignupEndDate = inputData.SignupEndDate
 	lesson.Status = inputData.Status
 
 

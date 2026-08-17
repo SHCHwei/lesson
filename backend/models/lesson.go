@@ -10,7 +10,10 @@ type Lesson struct{
     LessonAddress 	string  `gorm:"column:lessonAddress" json:"lessonAddress"`
     TuitionFee 		string  `gorm:"column:tuitionFee" json:"tuitionFee"`
     Email 			string  `gorm:"column:email" json:"email"`
-    SignupDates 	string  `gorm:"column:signupDates" json:"signupDates"`
+    SignupStartDate string  `gorm:"column:signupStartDate" json:"signupStartDate"`
+    SignupEndDate 	string  `gorm:"column:signupEndDate" json:"signupEndDate"`
+
+
     Status 			string  `gorm:"column:status" json:"status"`
 
     Students        []Student `gorm:"many2many:lesson_students;"`

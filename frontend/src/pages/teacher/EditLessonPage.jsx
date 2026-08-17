@@ -119,7 +119,6 @@ export default function EditLessonPage({ currentUser }) {
 
     setLoading(true)
     try {
-      const signupDates = `${form.signupStartDate} ~ ${form.signupEndDate}`
       
       await lessonApi.update(lessonID, {
         lessonName: form.lessonName,
@@ -127,7 +126,8 @@ export default function EditLessonPage({ currentUser }) {
         tuitionFee: form.tuitionFee,
         lessonTime: form.lessonTime,
         lessonAddress: form.lessonAddress,
-        signupDates: signupDates,
+        signupStartDate: form.signupStartDate,
+        signupEndDate: form.signupEndDate,
         status: form.status,
         email: form.email,
         teacherID: String(currentUser.id),
@@ -163,17 +163,14 @@ export default function EditLessonPage({ currentUser }) {
         
         setStudents(data.students || [])
         
-        // 將 signupDates 分割成開始和結束日期
-        const dates = data.lesson.signupDates ? data.lesson.signupDates.split(' ~ ') : ['', '']
-        
         setForm({
           lessonName: data.lesson.lessonName || '',
           lessonDescribe: data.lesson.lessonDescribe || '',
           tuitionFee: data.lesson.tuitionFee || '',
           lessonTime: data.lesson.lessonTime || '',
           lessonAddress: data.lesson.lessonAddress || '',
-          signupStartDate: dates[0] || '',
-          signupEndDate: dates[1] || '',
+          signupStartDate: data.lesson.signupStartDate || '',
+          signupEndDate: data.lesson.signupEndDate || '',
           status: data.lesson.status || '1',
           email: data.lesson.email || '',
         })

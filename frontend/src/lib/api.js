@@ -62,6 +62,7 @@ export const authApi = {
 }
 
 export const teacherApi = {
+  overview: () => api.get('/api/v1/teachers/overview'),
   list: () => api.get('/api/v1/teachers/'),
   getById: (id) => api.get(`/api/v1/teachers/${id}`),
   getLessonList: (id) => api.get(`/api/v1/teachers/${id}/lessonList`),
@@ -72,6 +73,7 @@ export const teacherApi = {
 }
 
 export const studentApi = {
+  overview: () => api.get('/api/v1/students/overview'),
   list: () => api.get('/api/v1/students/'),
   getLessonList: (id) => api.get(`/api/v1/students/${id}/lessonList`),
   getById: (id) => api.get(`/api/v1/students/${id}`),

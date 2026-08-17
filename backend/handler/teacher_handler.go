@@ -138,3 +138,9 @@ func (h *TeacherHandler) UpdatePassword(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "密碼更新成功"})
 }
+
+
+func (h *TeacherHandler) Overview(c *gin.Context) {
+	overview := h.teacherService.GetOverview()
+	c.JSON(http.StatusOK, overview)
+}
