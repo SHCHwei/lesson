@@ -31,6 +31,8 @@ func (s *TeacherService) CreateTeacher(teacher models.Teacher) (models.Teacher, 
 		return teacher, err
 	}
 
+	// 清空密碼不返回
+	teacher.PW = ""
 	return teacher, nil
 }
 
@@ -70,9 +72,45 @@ func (s *TeacherService) DeleteTeacher(id int) error {
 func (s *TeacherService) SearchLessonByTeacherID(id int) (models.Teacher, error) {
 	var teacher models.Teacher
 
-	if err := s.db.Preload("Lesson").First(&teacher, id).Error; err != nil {
+	// 預加載課程和每個課程的學生列表
+	if err := s.db.Preload("Lesson.Students").First(&teacher, id).Error; err != nil {
 		return teacher, err
 	}
 
+	// 清除老師密碼
+	teacher.PW = ""
+
+	// 清空每個課程中學生的密碼
+	for i := range teacher.Lesson {
+		for j := range teacher.Lesson[i].Students {
+			teacher.Lesson[i].Students[j].PW = ""
+		}
+	}
+
 	return teacher, nil
+}
+
+func (s *TeacherService) UpdatePassword(id int, newPassword string, currentPassword string) error {
+	var teacher models.Teacher
+
+	if err := s.db.First(&teacher, id).Error; err != nil {
+		return err
+	}
+
+	if !utils.CheckPasswordHash(currentPassword, teacher.PW) {
+		return errors.New("current password is incorrect")
+	}
+
+	hashedPassword, err := utils.HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+
+	teacher.PW = hashedPassword
+
+	if err := s.db.Save(&teacher).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

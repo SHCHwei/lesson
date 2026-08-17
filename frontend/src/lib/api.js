@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL !== undefined ? "https://" + import.meta.env.VITE_API_BASE_URL : ''
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL !== undefined ? "http://" + import.meta.env.VITE_API_BASE_URL : ''
 
 function buildUrl(path) {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
@@ -67,6 +67,7 @@ export const teacherApi = {
   getLessonList: (id) => api.get(`/api/v1/teachers/${id}/lessonList`),
   create: (payload) => api.post('/api/v1/teachers/', payload),
   update: (id, payload) => api.put(`/api/v1/teachers/${id}`, payload),
+  updatePassword: (payload) => api.put('/api/v1/teachers/change-password', payload),
   remove: (id) => api.del(`/api/v1/teachers/${id}`),
 }
 
@@ -76,6 +77,7 @@ export const studentApi = {
   getById: (id) => api.get(`/api/v1/students/${id}`),
   create: (payload) => api.post('/api/v1/students/', payload),
   update: (id, payload) => api.put(`/api/v1/students/${id}`, payload),
+  updatePassword: (payload) => api.put('/api/v1/students/change-password', payload),
   remove: (id) => api.del(`/api/v1/students/${id}`),
 }
 

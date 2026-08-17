@@ -142,6 +142,7 @@ export default function AppRoutes({
         element={requireAuth(
           <SecurityPage
             userRole={userRole}
+            currentUser={currentUser}
             setLoggedIn={setLoggedIn}
             setCurrentUser={setCurrentUser}
           />,

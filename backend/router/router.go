@@ -35,6 +35,7 @@ func SetupRouter(cfg *config.Config, authHandler *handler.AuthHandler, studentHa
 		studentRoutes.GET("/", studentHandler.List)
 		studentRoutes.GET("/:id", studentHandler.GetByID)
 		studentRoutes.PUT("/:id", studentHandler.Update)
+		studentRoutes.PUT("/change-password", studentHandler.UpdatePassword)
 		studentRoutes.DELETE("/:id", studentHandler.Delete)
 		studentRoutes.GET("/:id/lessonList", studentHandler.GetLessonList)
 	}
@@ -58,6 +59,7 @@ func SetupRouter(cfg *config.Config, authHandler *handler.AuthHandler, studentHa
 		teacherRoutes.GET("/", teacherHandler.List)
 		teacherRoutes.GET("/:id", teacherHandler.GetByID)
 		teacherRoutes.PUT("/:id", teacherHandler.Update)
+		teacherRoutes.PUT("/change-password", teacherHandler.UpdatePassword)
 		teacherRoutes.DELETE("/:id", teacherHandler.Delete)
 		teacherRoutes.GET("/:id/lessonList", teacherHandler.SearchLessonByTeacherID)
 	}

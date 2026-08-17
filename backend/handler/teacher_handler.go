@@ -110,3 +110,31 @@ func (h *TeacherHandler) SearchLessonByTeacherID(c *gin.Context) {
 
 	c.JSON(http.StatusOK, lesson)
 }
+
+
+func (h *TeacherHandler) UpdatePassword(c *gin.Context) {
+
+	var updateDTO struct {
+		TeacherID   	string `json:"teacherID" binding:"required"`
+		CurrentPassword string `json:"currentPassword" binding:"required,nefield=NewPassword"`
+		NewPassword     string `json:"newPassword" binding:"required,gte=6"`
+	}
+	
+	if err := c.ShouldBindJSON(&updateDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "請求格式不正確"})
+		return
+	}
+
+	teacherID, err := strconv.Atoi(updateDTO.TeacherID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "teacher_id 格式不正確"})
+		return
+	}
+
+	if err := h.teacherService.UpdatePassword(teacherID, updateDTO.NewPassword, updateDTO.CurrentPassword); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "密碼更新成功"})
+}

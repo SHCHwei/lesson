@@ -67,3 +67,29 @@ func (s *StudentService) UpdateStudent(id int, student models.Student) (models.S
 func (s *StudentService) DeleteStudent(id int) error {
 	return s.db.Delete(&models.Student{}, id).Error
 }
+
+func (s *StudentService) UpdatePassword(id int, newPassword string, currentPassword string) error {
+	var student models.Student
+
+	if err := s.db.First(&student, id).Error; err != nil {
+		return err
+	}
+	
+	if !utils.CheckPasswordHash(currentPassword, student.PW) {
+		return errors.New("current password is incorrect")
+	}
+
+
+	hashedPassword, err := utils.HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+
+	student.PW = hashedPassword
+
+	if err := s.db.Save(&student).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
