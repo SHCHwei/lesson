@@ -85,6 +85,15 @@ export default function LoginPage({ role, loggedIn, setLoggedIn, setUserRole, se
             <Box className="api-badge" sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)', mt: 1 }}>
               Target API: {targetApi}
             </Box>
+
+            <Box className="api-badge" sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)', mt: 1 }}>
+              預設帳號密碼: <br />
+              {isTeacher
+                ? <>帳號: teacher@example.com <br />密碼: teacher123</>
+                : <>帳號: student@example.com <br />密碼: student123</>
+              }
+            </Box>              
+
           </Box>
 
           <Box className="login-form-box">
