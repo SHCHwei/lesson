@@ -22,3 +22,10 @@ func initRedis(redisCfg *config.RedisConfig) {
 func GetRedisClient() *redis.Client {
 	return rdb
 }
+
+
+// SetRedisClient 設置 Redis 客戶端
+// 這個函數主要用於測試，允許注入測試用的 Redis 客戶端
+func SetRedisClient(client *redis.Client) {
+    rdb = client
+}

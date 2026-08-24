@@ -3,6 +3,7 @@ package middleware
 import (
 	"backend/config"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func Cors(cfg *config.Config) gin.HandlerFunc {
@@ -14,7 +15,7 @@ func Cors(cfg *config.Config) gin.HandlerFunc {
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
 
 		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
+			c.AbortWithStatus(http.StatusNoContent)
 			return
 		}
 
