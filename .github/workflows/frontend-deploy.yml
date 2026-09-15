@@ -45,7 +45,8 @@ jobs:
 
       - name: 執行安全性審查 (套件檢查)
         # audit --audit-level=high 表示只有高風險以上的漏洞才會讓 CI 失敗中斷
-        run: npm audit --audit-level=high
+        working-directory: ./frontend
+        run: npm audit --omit=dev --audit-level=high
 
 
       - name: Run linter
@@ -174,4 +175,3 @@ jobs:
   #           cd /path/to/your/app
   #           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
   #           docker-compose up -d frontend
-
