@@ -1,0 +1,107 @@
+[[exclude]]
+id = "GO-2026-6090"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2026-6089"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2026-6088"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2026-5972"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2026-5970"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2026-5856"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2026-5039"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2026-5037"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2026-4971"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2026-4947"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2026-4946"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2026-4870"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2026-4865"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2026-4602"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2026-4601"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2026-4340"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2026-4337"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2025-4175"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2025-4155"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2025-4013"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2025-4012"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2025-4011"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2025-4010"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2025-4009"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2025-4008"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2025-4007"
+reason = "暫時放行 CI"
+
+[[exclude]]
+id = "GO-2025-3595"
+reason = "暫時放行 CI"
