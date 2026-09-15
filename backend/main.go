@@ -33,5 +33,7 @@ func main() {
 		listenAddr = ":8080"
 	}
 
-	r.Run(listenAddr)
+	if err := r.Run(listenAddr) ; err != nil {
+		panic(err)
+	}
 }
