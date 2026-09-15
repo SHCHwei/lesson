@@ -56,7 +56,7 @@ jobs:
         working-directory: ./backend
         run: |
           export PATH="$(go env GOPATH)/bin:$PATH"
-          go install golang.org/x/vuln/cmd/govulncheck@latest
+          go install golang.org/x/vuln/cmd/govulncheck@v1.1.3
 
       # 執行 Go 漏洞掃描
       - name: Run Go vulnerability check
