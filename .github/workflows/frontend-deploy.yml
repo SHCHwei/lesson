@@ -43,6 +43,11 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
+      - name: 執行安全性審查 (套件檢查)
+        # audit --audit-level=high 表示只有高風險以上的漏洞才會讓 CI 失敗中斷
+        run: npm audit --audit-level=high
+
+
       - name: Run linter
         working-directory: ./frontend
         run: npm run lint
