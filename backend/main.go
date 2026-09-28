@@ -30,7 +30,7 @@ func main() {
 
 	listenAddr := ":" + cfg.Port
 	if cfg.Port == "" {
-		listenAddr = ":8080"
+		listenAddr = ":8123"
 	}
 
 	if err := r.Run(listenAddr) ; err != nil {

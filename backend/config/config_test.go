@@ -19,8 +19,8 @@ func TestLoad(t *testing.T) {
 			t.Errorf("Expected Domain to be 'localhost', got '%s'", cfg.Domain)
 		}
 
-		if cfg.Port != "8080" {
-			t.Errorf("Expected Port to be '8080', got '%s'", cfg.Port)
+		if cfg.Port != "8123" {
+			t.Errorf("Expected Port to be '8123', got '%s'", cfg.Port)
 		}
 
 		if cfg.Env != "dev" {

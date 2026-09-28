@@ -12,7 +12,7 @@ RUN go mod download
 # 複製全部程式碼
 COPY . .
 
-# ＃EXPOSE 8080
+# ＃EXPOSE 8123
 
 # 預設指令（會被 docker-compose 覆蓋）
 CMD ["go", "run", "main.go"]
